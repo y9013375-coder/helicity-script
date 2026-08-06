@@ -6,17 +6,24 @@ local Lighting = game:GetService("Lighting")
 local Workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 
+local playerGui = LocalPlayer:WaitForChild("PlayerGui", 10)
+if not playerGui then return end
+
+local oldGui = playerGui:FindFirstChild("HelicityProHubV41") or CoreGui:FindFirstChild("HelicityProHubV41")
+if oldGui then oldGui:Destroy() end
+
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "HelicityProHubV41"
 ScreenGui.ResetOnSpawn = false
 
 if gethui then
-    ScreenGui.Parent = gethui()
-elseif syn and syn.protect_gui then
-    syn.protect_gui(ScreenGui)
-    ScreenGui.Parent = CoreGui
-else
-    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    pcall(function() ScreenGui.Parent = gethui() end)
+end
+if not ScreenGui.Parent then
+    pcall(function() ScreenGui.Parent = CoreGui end)
+end
+if not ScreenGui.Parent then
+    ScreenGui.Parent = playerGui
 end
 
 local MainFrame = Instance.new("Frame")
@@ -515,9 +522,4 @@ RadarBtn.MouseButton1Click:Connect(function()
                         sizeX = math.floor(math.max(size.X, size.Z))
                     end
 
-                    local windSpeedMph = math.floor((sizeX * 2.2) + (moveSpeedMph * 2.8) + 40)
-                    local efScale = "EF0"
-                    local efColor = Color3.fromRGB(120, 220, 120)
-
-                    if windSpeedMph >= 200 or sizeX > 250 then
-                        efScale = "EF5
+                    local windSpeedMph = math.floor((sizeX * 2
