@@ -1,29 +1,34 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
 local StarterGui = game:GetService("StarterGui")
 local Lighting = game:GetService("Lighting")
 local Workspace = game:GetService("Workspace")
-
 local LocalPlayer = Players.LocalPlayer
-while not LocalPlayer do
-    task.wait(0.1)
-    LocalPlayer = Players.LocalPlayer
-end
 
 local playerGui = LocalPlayer:WaitForChild("PlayerGui", 10)
 if not playerGui then return end
 
-local oldGui = playerGui:FindFirstChild("HelicityProHubFinal")
+local oldGui = playerGui:FindFirstChild("HelicityProHubV421") or CoreGui:FindFirstChild("HelicityProHubV421")
 if oldGui then oldGui:Destroy() end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HelicityProHubFinal"
+ScreenGui.Name = "HelicityProHubV421"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = playerGui
+
+if gethui then
+    pcall(function() ScreenGui.Parent = gethui() end)
+end
+if not ScreenGui.Parent then
+    pcall(function() ScreenGui.Parent = CoreGui end)
+end
+if not ScreenGui.Parent then
+    ScreenGui.Parent = playerGui
+end
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 250, 0, 350)
-MainFrame.Position = UDim2.new(0.5, -125, 0.1, 0)
+MainFrame.Size = UDim2.new(0, 260, 0, 370)
+MainFrame.Position = UDim2.new(0.5, -130, 0.12, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -31,12 +36,13 @@ MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 12)
+MainCorner.CornerRadius = UDim.new(0, 14)
 MainCorner.Parent = MainFrame
 
 local MainStroke = Instance.new("UIStroke")
 MainStroke.Color = Color3.fromRGB(0, 170, 255)
 MainStroke.Thickness = 1.5
+MainStroke.Transparency = 0.3
 MainStroke.Parent = MainFrame
 
 local TitleBar = Instance.new("Frame")
@@ -46,16 +52,23 @@ TitleBar.BorderSizePixel = 0
 TitleBar.Parent = MainFrame
 
 local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 12)
+TitleCorner.CornerRadius = UDim.new(0, 14)
 TitleCorner.Parent = TitleBar
+
+local TitleFix = Instance.new("Frame")
+TitleFix.Size = UDim2.new(1, 0, 0, 10)
+TitleFix.Position = UDim2.new(0, 0, 1, -10)
+TitleFix.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+TitleFix.BorderSizePixel = 0
+TitleFix.Parent = TitleBar
 
 local TitleText = Instance.new("TextLabel")
 TitleText.Size = UDim2.new(1, -45, 1, 0)
 TitleText.Position = UDim2.new(0, 12, 0, 0)
-TitleText.Text = "⚡ HELICITY ULTIMATE"
+TitleText.Text = "⚡ HELICITY PRO v4.2.1 ULTRA"
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleText.Font = Enum.Font.GothamBold
-TitleText.TextSize = 12
+TitleText.TextSize = 12.5
 TitleText.TextXAlignment = Enum.TextXAlignment.Left
 TitleText.BackgroundTransparency = 1
 TitleText.Parent = TitleBar
@@ -71,23 +84,23 @@ MinimizeBtn.TextSize = 12
 MinimizeBtn.Parent = TitleBar
 
 local MinBtnCorner = Instance.new("UICorner")
-MinBtnCorner.CornerRadius = UDim.new(0, 6)
+MinBtnCorner.CornerRadius = UDim.new(0, 8)
 MinBtnCorner.Parent = MinimizeBtn
 
 local OpenBtn = Instance.new("TextButton")
-OpenBtn.Size = UDim2.new(0, 48, 0, 48)
-OpenBtn.Position = UDim2.new(0, 10, 0.35, 0)
+OpenBtn.Size = UDim2.new(0, 52, 0, 52)
+OpenBtn.Position = UDim2.new(0, 15, 0.35, 0)
 OpenBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 OpenBtn.Text = "⚡"
 OpenBtn.TextColor3 = Color3.fromRGB(0, 170, 255)
-OpenBtn.TextSize = 20
+OpenBtn.TextSize = 22
 OpenBtn.Visible = false
 OpenBtn.Active = true
 OpenBtn.Draggable = true
 OpenBtn.Parent = ScreenGui
 
 local OpenCorner = Instance.new("UICorner")
-OpenCorner.CornerRadius = UDim.new(0, 24)
+OpenCorner.CornerRadius = UDim.new(0, 26)
 OpenCorner.Parent = OpenBtn
 
 local OpenStroke = Instance.new("UIStroke")
@@ -96,23 +109,23 @@ OpenStroke.Thickness = 2
 OpenStroke.Parent = OpenBtn
 
 local ScrollContainer = Instance.new("ScrollingFrame")
-ScrollContainer.Size = UDim2.new(1, -12, 1, -44)
-ScrollContainer.Position = UDim2.new(0, 6, 0, 38)
+ScrollContainer.Size = UDim2.new(1, -16, 1, -46)
+ScrollContainer.Position = UDim2.new(0, 8, 0, 40)
 ScrollContainer.BackgroundTransparency = 1
 ScrollContainer.ScrollBarThickness = 2
 ScrollContainer.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
-ScrollContainer.CanvasSize = UDim2.new(0, 0, 0, 330)
+ScrollContainer.CanvasSize = UDim2.new(0, 0, 0, 350)
 ScrollContainer.Parent = MainFrame
 
 local UIList = Instance.new("UIListLayout")
-UIList.Padding = UDim.new(0, 6)
+UIList.Padding = UDim.new(0, 7)
 UIList.SortOrder = Enum.SortOrder.LayoutOrder
 UIList.Parent = ScrollContainer
 
 local RadarFrame = Instance.new("Frame")
-RadarFrame.Size = UDim2.new(0, 210, 0, 150)
-RadarFrame.Position = UDim2.new(0, 10, 0.55, 0)
-RadarFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
+RadarFrame.Size = UDim2.new(0, 220, 0, 165)
+RadarFrame.Position = UDim2.new(0, 15, 0.52, 0)
+RadarFrame.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
 RadarFrame.BorderSizePixel = 0
 RadarFrame.Active = true
 RadarFrame.Draggable = true
@@ -120,7 +133,7 @@ RadarFrame.Visible = false
 RadarFrame.Parent = ScreenGui
 
 local RadarCorner = Instance.new("UICorner")
-RadarCorner.CornerRadius = UDim.new(0, 10)
+RadarCorner.CornerRadius = UDim.new(0, 12)
 RadarCorner.Parent = RadarFrame
 
 local RadarStroke = Instance.new("UIStroke")
@@ -129,31 +142,33 @@ RadarStroke.Thickness = 1.5
 RadarStroke.Parent = RadarFrame
 
 local RadarTitle = Instance.new("TextLabel")
-RadarTitle.Size = UDim2.new(1, 0, 0, 24)
-RadarTitle.Text = "📡 CANLI TORNADO RADARI"
+RadarTitle.Size = UDim2.new(1, 0, 0, 26)
+RadarTitle.Position = UDim2.new(0, 0, 0, 2)
+RadarTitle.Text = "📡 TORNADO CANLI RADAR"
 RadarTitle.TextColor3 = Color3.fromRGB(255, 165, 0)
 RadarTitle.Font = Enum.Font.GothamBold
-RadarTitle.TextSize = 10.5
+RadarTitle.TextSize = 11
 RadarTitle.BackgroundTransparency = 1
 RadarTitle.Parent = RadarFrame
 
 local RadarContainer = Instance.new("Frame")
-RadarContainer.Size = UDim2.new(1, -12, 1, -28)
-RadarContainer.Position = UDim2.new(0, 6, 0, 24)
+RadarContainer.Size = UDim2.new(1, -16, 1, -30)
+RadarContainer.Position = UDim2.new(0, 8, 0, 26)
 RadarContainer.BackgroundTransparency = 1
 RadarContainer.Parent = RadarFrame
 
 local RadarList = Instance.new("UIListLayout")
-RadarList.Padding = UDim.new(0, 2)
+RadarList.Padding = UDim.new(0, 3)
+RadarList.SortOrder = Enum.SortOrder.LayoutOrder
 RadarList.Parent = RadarContainer
 
 local function createRadarRow(labelTitle)
     local rowText = Instance.new("TextLabel")
-    rowText.Size = UDim2.new(1, 0, 0, 16)
+    rowText.Size = UDim2.new(1, 0, 0, 17)
     rowText.Text = labelTitle .. ": ---"
     rowText.TextColor3 = Color3.fromRGB(220, 220, 230)
     rowText.Font = Enum.Font.GothamMedium
-    rowText.TextSize = 9.5
+    rowText.TextSize = 10
     rowText.TextXAlignment = Enum.TextXAlignment.Left
     rowText.BackgroundTransparency = 1
     rowText.Parent = RadarContainer
@@ -169,8 +184,8 @@ local EfRow = createRadarRow("⚠️ EF Seviyesi")
 
 local function createToggle(titleText, order)
     local buttonFrame = Instance.new("Frame")
-    buttonFrame.Size = UDim2.new(1, 0, 0, 40)
-    buttonFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 28)
+    buttonFrame.Size = UDim2.new(1, 0, 0, 42)
+    buttonFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 33)
     buttonFrame.BorderSizePixel = 0
     buttonFrame.LayoutOrder = order
     buttonFrame.Parent = ScrollContainer
@@ -180,24 +195,24 @@ local function createToggle(titleText, order)
     bCorner.Parent = buttonFrame
 
     local bStroke = Instance.new("UIStroke")
-    bStroke.Color = Color3.fromRGB(35, 35, 45)
+    bStroke.Color = Color3.fromRGB(40, 40, 55)
     bStroke.Thickness = 1
     bStroke.Parent = buttonFrame
 
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, -70, 1, 0)
-    label.Position = UDim2.new(0, 8, 0, 0)
+    label.Size = UDim2.new(1, -75, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
     label.Text = titleText
     label.TextColor3 = Color3.fromRGB(220, 220, 230)
     label.Font = Enum.Font.GothamMedium
-    label.TextSize = 10.5
+    label.TextSize = 11
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.BackgroundTransparency = 1
     label.Parent = buttonFrame
 
     local statusBadge = Instance.new("Frame")
-    statusBadge.Size = UDim2.new(0, 50, 0, 22)
-    statusBadge.Position = UDim2.new(1, -56, 0.5, -11)
+    statusBadge.Size = UDim2.new(0, 54, 0, 24)
+    statusBadge.Position = UDim2.new(1, -60, 0.5, -12)
     statusBadge.BackgroundColor3 = Color3.fromRGB(180, 45, 45)
     statusBadge.BorderSizePixel = 0
     statusBadge.Parent = buttonFrame
@@ -211,7 +226,7 @@ local function createToggle(titleText, order)
     statusText.Text = "KAPALI"
     statusText.TextColor3 = Color3.fromRGB(255, 255, 255)
     statusText.Font = Enum.Font.GothamBold
-    statusText.TextSize = 9
+    statusText.TextSize = 9.5
     statusText.BackgroundTransparency = 1
     statusText.Parent = statusBadge
 
@@ -236,6 +251,7 @@ local isPedAnchored, isVehProtection, isInvForced = false, false, false
 local isEspActive, isRadarActive, isSpeedBoosted, isFpsBoosted = false, false, false, false
 local pedLoop, vehLoop, invLoop, speedLoop, radarTask = nil, nil, nil, nil, nil
 local espElements = {}
+local originalLightingState = {}
 
 local function updateStateUI(badge, textLabel, stroke, state)
     if state then
@@ -245,7 +261,7 @@ local function updateStateUI(badge, textLabel, stroke, state)
     else
         badge.BackgroundColor3 = Color3.fromRGB(180, 45, 45)
         textLabel.Text = "KAPALI"
-        stroke.Color = Color3.fromRGB(35, 35, 45)
+        stroke.Color = Color3.fromRGB(40, 40, 55)
     end
 end
 
@@ -333,7 +349,7 @@ InvBtn.MouseButton1Click:Connect(function()
                 pcall(function() StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true) end)
                 for _, prompt in ipairs(Workspace:GetDescendants()) do
                     if prompt:IsA("ProximityPrompt") then
-                        prompt.MaxActivationDistance = 70
+                        prompt.MaxActivationDistance = 60
                         prompt.RequiresLineOfSight = false
                         prompt.HoldDuration = 0
                     end
@@ -412,7 +428,7 @@ EspBtn.MouseButton1Click:Connect(function()
         end
         task.spawn(function()
             while isEspActive do
-                task.wait(0.15)
+                task.wait(0.1)
                 for obj, data in pairs(espElements) do
                     if data.Part and data.Part.Parent then
                         local currentPos = data.Part.Position
@@ -445,7 +461,7 @@ RadarBtn.MouseButton1Click:Connect(function()
             local lastTime = os.clock()
 
             while isRadarActive do
-                task.wait(0.4)
+                task.wait(0.5)
                 local closestTornado = nil
                 local minDistance = math.huge
                 local playerPos = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character.HumanoidRootPart.Position
@@ -506,4 +522,108 @@ RadarBtn.MouseButton1Click:Connect(function()
                         efScale = "EF3 ⚡"
                         efColor = Color3.fromRGB(255, 140, 0)
                     elseif windSpeedMph >= 110 or sizeX > 90 then
-           
+                        efScale = "EF2 🔥"
+                        efColor = Color3.fromRGB(255, 215, 0)
+                    elseif windSpeedMph >= 85 or sizeX > 50 then
+                        efScale = "EF1 🥀"
+                        efColor = Color3.fromRGB(180, 220, 60)
+                    end
+
+                    DistanceRow.Text = "🎯 Mesafeniz: " .. math.floor(minDistance) .. " Studs"
+                    SpeedRow.Text = "🚀 İlerleme Hızı: " .. moveSpeedMph .. " MPH"
+                    HeadingRow.Text = "🧭 İlerleme Yönü: " .. headingStr
+                    WindRow.Text = "💨 Rüzgar Hızı: ~" .. windSpeedMph .. " MPH"
+                    WidthRow.Text = "📐 Genişlik: " .. sizeX .. " Metre"
+                    EfRow.Text = "⚠️ EF Seviyesi: " .. efScale
+                    EfRow.TextColor3 = efColor
+                else
+                    DistanceRow.Text = "🎯 Mesafeniz: Kasırga Bulunamadı"
+                    SpeedRow.Text = "🚀 İlerleme Hızı: ---"
+                    HeadingRow.Text = "🧭 İlerleme Yönü: ---"
+                    WindRow.Text = "💨 Rüzgar Hızı: ---"
+                    WidthRow.Text = "📐 Genişlik: ---"
+                    EfRow.Text = "⚠️ EF Seviyesi: ---"
+                    EfRow.TextColor3 = Color3.fromRGB(220, 220, 230)
+                end
+            end
+        end)
+    else
+        if radarTask then task.cancel(radarTask) radarTask = nil end
+    end
+end)
+
+-- 6. 200 MPH ARABA HIZI (STABİL)
+SpeedBtn.MouseButton1Click:Connect(function()
+    isSpeedBoosted = not isSpeedBoosted
+    updateStateUI(SpeedBadge, SpeedStatus, SpeedStroke, isSpeedBoosted)
+    if isSpeedBoosted then
+        if speedLoop then speedLoop:Disconnect() end
+        speedLoop = RunService.Heartbeat:Connect(function()
+            if isSpeedBoosted and LocalPlayer.Character then
+                local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                if hum and hum.SeatPart and hum.SeatPart:IsA("VehicleSeat") then
+                    local seat = hum.SeatPart
+                    pcall(function() seat.MaxSpeed = 200 end)
+                    if seat.ThrottleFloat ~= 0 then
+                        local currentVel = seat.AssemblyLinearVelocity
+                        local forwardSpeed = seat.CFrame.LookVector:Dot(currentVel)
+                        if forwardSpeed < 200 then
+                            seat.AssemblyLinearVelocity = seat.AssemblyLinearVelocity + (seat.CFrame.LookVector * (seat.ThrottleFloat * 3.5))
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        if speedLoop then speedLoop:Disconnect() speedLoop = nil end
+    end
+end)
+
+-- 7. SOFT FPS BOOSTER
+FpsBtn.MouseButton1Click:Connect(function()
+    isFpsBoosted = not isFpsBoosted
+    updateStateUI(FpsBadge, FpsStatus, FpsStroke, isFpsBoosted)
+    if isFpsBoosted then
+        originalLightingState.GlobalShadows = Lighting.GlobalShadows
+        Lighting.GlobalShadows = false
+        for _, v in ipairs(Lighting:GetChildren()) do
+            if v:IsA("PostEffect") or v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
+                v.Enabled = false
+            end
+        end
+        local terrain = Workspace:FindFirstChildOfClass("Terrain")
+        if terrain then terrain.Decoration = false end
+        for _, v in ipairs(Workspace:GetDescendants()) do
+            if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
+                v.Enabled = false
+            end
+        end
+        if setfpscap then setfpscap(120) end
+    else
+        if originalLightingState.GlobalShadows ~= nil then
+            Lighting.GlobalShadows = originalLightingState.GlobalShadows
+        end
+        for _, v in ipairs(Lighting:GetChildren()) do
+            if v:IsA("PostEffect") or v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
+                v.Enabled = true
+            end
+        end
+        local terrain = Workspace:FindFirstChildOfClass("Terrain")
+        if terrain then terrain.Decoration = true end
+        for _, v in ipairs(Workspace:GetDescendants()) do
+            if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
+                v.Enabled = true
+            end
+        end
+    end
+end)
+
+MinimizeBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    OpenBtn.Visible = true
+end)
+
+OpenBtn.MouseButton1Click:Connect(function()
+    OpenBtn.Visible = false
+    MainFrame.Visible = true
+end)
