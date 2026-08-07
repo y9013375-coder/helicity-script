@@ -29,14 +29,14 @@ local parentGui = getSafeGuiParent()
 if not parentGui then return end
 
 pcall(function()
-    local old1 = parentGui:FindFirstChild("HelicityProHubV52")
+    local old1 = parentGui:FindFirstChild("HelicityMasterV7")
     if old1 then old1:Destroy() end
-    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityProHubV52")
+    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityMasterV7")
     if old2 then old2:Destroy() end
 end)
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HelicityProHubV52"
+ScreenGui.Name = "HelicityMasterV7"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui
 
@@ -54,7 +54,7 @@ task.spawn(function()
 
     local tText = Instance.new("TextLabel")
     tText.Size = UDim2.new(1, 0, 1, 0)
-    tText.Text = "⚡ HELICITY PRO v5.2 ACTIVE!"
+    tText.Text = "⚡ HELICITY PRO v7.0 MASTER ACTIVE!"
     tText.TextColor3 = Color3.fromRGB(255, 255, 255)
     tText.Font = Enum.Font.GothamBold
     tText.TextSize = 10.5
@@ -97,7 +97,7 @@ TitleCorner.Parent = TitleBar
 local TitleText = Instance.new("TextLabel")
 TitleText.Size = UDim2.new(1, -45, 1, 0)
 TitleText.Position = UDim2.new(0, 12, 0, 0)
-TitleText.Text = "⚡ HELICITY PRO v5.2 MASTER"
+TitleText.Text = "⚡ HELICITY PRO v7.0 MASTER"
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleText.Font = Enum.Font.GothamBold
 TitleText.TextSize = 12
@@ -146,7 +146,7 @@ ScrollContainer.Position = UDim2.new(0, 7, 0, 42)
 ScrollContainer.BackgroundTransparency = 1
 ScrollContainer.ScrollBarThickness = 3
 ScrollContainer.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
-ScrollContainer.CanvasSize = UDim2.new(0, 0, 0, 510)
+ScrollContainer.CanvasSize = UDim2.new(0, 0, 0, 460)
 ScrollContainer.Parent = MainFrame
 
 local UIList = Instance.new("UIListLayout")
@@ -305,15 +305,13 @@ local TpVehBtn = createActionButton("🚗 HORTUMA ISINLAN (ARABA)", 2, Color3.fr
 local PedBtn, PedBadge, PedStatus, PedStroke = createToggle("YERDE SABİTLE", 3)
 local VehBtn, VehBadge, VehStatus, VehStroke = createToggle("ARABA KORUMASI", 4)
 local InvBtn, InvBadge, InvStatus, InvStroke = createToggle("ARABA İÇİ PROBE TOPLAMA", 5)
-local EspBtn, EspBadge, EspStatus, EspStroke = createToggle("TORNADO ESP & YÖN OKU", 6)
-local RadarBtn, RadarBadge, RadarStatus, RadarStroke = createToggle("CANLI TORNADO RADARI", 7)
-local SpeedBtn, SpeedBadge, SpeedStatus, SpeedStroke = createToggle("200 MPH ARABA HIZI", 8)
-local FpsBtn, FpsBadge, FpsStatus, FpsStroke = createToggle("SOFT FPS BOOSTER", 9)
+local RadarBtn, RadarBadge, RadarStatus, RadarStroke = createToggle("CANLI TORNADO RADARI", 6)
+local SpeedBtn, SpeedBadge, SpeedStatus, SpeedStroke = createToggle("200 MPH ARABA HIZI", 7)
+local FpsBtn, FpsBadge, FpsStatus, FpsStroke = createToggle("SOFT FPS BOOSTER", 8)
 
 local isPedAnchored, isVehProtection, isInvForced = false, false, false
-local isEspActive, isRadarActive, isSpeedBoosted, isFpsBoosted = false, false, false, false
+local isRadarActive, isSpeedBoosted, isFpsBoosted = false, false, false
 local pedLoop, vehLoop, invLoop, speedLoop, radarTask = nil, nil, nil, nil, nil
-local espElements = {}
 local originalLightingState = {}
 
 local function updateStateUI(badge, textLabel, stroke, state)
@@ -354,7 +352,6 @@ local function getActiveTornadoPart()
 
                 if part then
                     local score = 10
-                    
                     if obj:FindFirstChildWhichIsA("ParticleEmitter", true) or obj:FindFirstChildWhichIsA("Beam", true) or obj:FindFirstChildWhichIsA("Smoke", true) then
                         score = score + 60
                     end
@@ -378,6 +375,47 @@ local function getActiveTornadoPart()
         end
     end
     return bestPart
+end
+
+local function getGroundHeight(x, startY, z)
+    local rayOrigin = Vector3.new(x, math.max(startY + 400, 700), z)
+    local rayDirection = Vector3.new(0, -3000, 0)
+    
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+    
+    local ignoreList = {}
+    if LocalPlayer.Character then
+        table.insert(ignoreList, LocalPlayer.Character)
+    end
+    local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if hum and hum.SeatPart then
+        local veh = hum.SeatPart:FindFirstAncestorOfClass("Model") or hum.SeatPart.Parent
+        if veh then table.insert(ignoreList, veh) end
+    end
+    raycastParams.FilterDescendantsInstances = ignoreList
+
+    local result = Workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+    if result then
+        return result.Position.Y
+    end
+    return startY
+end
+
+local function getTornadoMovementDirection(part)
+    local vel = part.AssemblyLinearVelocity
+    local flatVel = Vector3.new(vel.X, 0, vel.Z)
+    if flatVel.Magnitude > 0.5 then
+        return flatVel.Unit
+    end
+    
+    local look = part.CFrame.LookVector
+    local flatLook = Vector3.new(look.X, 0, look.Z)
+    if flatLook.Magnitude > 0.1 then
+        return flatLook.Unit
+    end
+    
+    return Vector3.new(0, 0, -1)
 end
 
 local function getCompassDirection(dirVector)
@@ -410,11 +448,16 @@ TpPedBtn.MouseButton1Click:Connect(function()
     
     local char = LocalPlayer.Character
     if char and char:FindFirstChild("HumanoidRootPart") then
-        local lookDir = tornadoPart.CFrame.LookVector
-        if lookDir.Magnitude < 0.1 then lookDir = Vector3.new(0, 0, -1) end
+        local moveDir = getTornadoMovementDirection(tornadoPart)
         
-        local spawnPos = tornadoPart.Position + (lookDir * -220) + Vector3.new(0, 6, 0)
-        char.HumanoidRootPart.CFrame = CFrame.lookAt(spawnPos, tornadoPart.Position)
+        local spawnX = tornadoPart.Position.X + (moveDir.X * 350)
+        local spawnZ = tornadoPart.Position.Z + (moveDir.Z * 350)
+        
+        local groundY = getGroundHeight(spawnX, tornadoPart.Position.Y, spawnZ)
+        local spawnPos = Vector3.new(spawnX, groundY + 3.5, spawnZ)
+        local tornadoGroundTarget = Vector3.new(tornadoPart.Position.X, groundY + 3.5, tornadoPart.Position.Z)
+        
+        char.HumanoidRootPart.CFrame = CFrame.lookAt(spawnPos, tornadoGroundTarget)
     end
 end)
 
@@ -425,11 +468,15 @@ TpVehBtn.MouseButton1Click:Connect(function()
     local char = LocalPlayer.Character
     if char then
         local hum = char:FindFirstChildOfClass("Humanoid")
-        local lookDir = tornadoPart.CFrame.LookVector
-        if lookDir.Magnitude < 0.1 then lookDir = Vector3.new(0, 0, -1) end
+        local moveDir = getTornadoMovementDirection(tornadoPart)
         
-        local spawnPos = tornadoPart.Position + (lookDir * -260) + Vector3.new(0, 8, 0)
-        local targetCFrame = CFrame.lookAt(spawnPos, tornadoPart.Position)
+        local spawnX = tornadoPart.Position.X + (moveDir.X * 350)
+        local spawnZ = tornadoPart.Position.Z + (moveDir.Z * 350)
+        
+        local groundY = getGroundHeight(spawnX, tornadoPart.Position.Y, spawnZ)
+        local spawnPos = Vector3.new(spawnX, groundY + 4.5, spawnZ)
+        local tornadoGroundTarget = Vector3.new(tornadoPart.Position.X, groundY + 4.5, tornadoPart.Position.Z)
+        local targetCFrame = CFrame.lookAt(spawnPos, tornadoGroundTarget)
 
         if hum and hum.SeatPart then
             local seat = hum.SeatPart
@@ -445,7 +492,7 @@ TpVehBtn.MouseButton1Click:Connect(function()
             end
         else
             if char:FindFirstChild("HumanoidRootPart") then
-                char.HumanoidRootPart.CFrame = targetCFrame
+                char.HumanoidRootPart.CFrame = CFrame.lookAt(Vector3.new(spawnX, groundY + 3.5, spawnZ), Vector3.new(tornadoPart.Position.X, groundY + 3.5, tornadoPart.Position.Z))
             end
         end
     end
@@ -517,95 +564,6 @@ InvBtn.MouseButton1Click:Connect(function()
         end)
     else
         if invLoop then invLoop:Disconnect() invLoop = nil end
-    end
-end)
-
-local function clearEsp()
-    for obj, items in pairs(espElements) do
-        pcall(function()
-            if items.Highlight and items.Highlight.Parent then items.Highlight:Destroy() end
-            if items.Beam and items.Beam.Parent then items.Beam:Destroy() end
-            if items.Att0 and items.Att0.Parent then items.Att0:Destroy() end
-            if items.Att1 and items.Att1.Parent then items.Att1:Destroy() end
-        end)
-    end
-    espElements = {}
-end
-
-local function applyEsp(tornadoPart)
-    if not isEspActive or not tornadoPart then return end
-    local targetObj = tornadoPart:FindFirstAncestorOfClass("Model") or tornadoPart
-    if not espElements[targetObj] then
-        local rootPart = tornadoPart
-
-        local hl = Instance.new("Highlight")
-        hl.Name = "TornadoESP_Chams"
-        hl.FillColor = Color3.fromRGB(255, 30, 30)
-        hl.FillTransparency = 0.35
-        hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-        hl.OutlineTransparency = 0.1
-        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-        hl.Adornee = targetObj
-        hl.Parent = targetObj
-
-        local att0 = Instance.new("Attachment", rootPart)
-        local att1 = Instance.new("Attachment", Workspace.Terrain)
-        
-        local beam = Instance.new("Beam")
-        beam.Texture = "rbxassetid://431627270"
-        beam.TextureSpeed = 2
-        beam.TextureLength = 10
-        beam.Width0 = 14
-        beam.Width1 = 22
-        beam.Color = ColorSequence.new(Color3.fromRGB(255, 50, 50), Color3.fromRGB(255, 200, 0))
-        beam.FaceCamera = true
-        beam.Attachment0 = att0
-        beam.Attachment1 = att1
-        beam.Parent = rootPart
-
-        espElements[targetObj] = {
-            Highlight = hl,
-            Beam = beam,
-            Att0 = att0,
-            Att1 = att1,
-            LastPos = rootPart.Position,
-            Part = rootPart
-        }
-    end
-end
-
-EspBtn.MouseButton1Click:Connect(function()
-    isEspActive = not isEspActive
-    updateStateUI(EspBadge, EspStatus, EspStroke, isEspActive)
-    if isEspActive then
-        clearEsp()
-        task.spawn(function()
-            while isEspActive do
-                task.wait(0.2)
-                local tornadoPart = getActiveTornadoPart()
-                if tornadoPart then
-                    applyEsp(tornadoPart)
-                else
-                    clearEsp()
-                end
-
-                for obj, data in pairs(espElements) do
-                    if data.Part and data.Part.Parent then
-                        local currentPos = data.Part.Position
-                        local velocity = (currentPos - data.LastPos)
-                        data.LastPos = currentPos
-                        if velocity.Magnitude > 0.08 then
-                            local dir = velocity.Unit
-                            data.Att1.WorldPosition = currentPos + (dir * 220)
-                        else
-                            data.Att1.WorldPosition = currentPos + Vector3.new(0, 5, 0)
-                        end
-                    end
-                end
-            end
-        end)
-    else
-        clearEsp()
     end
 end)
 
