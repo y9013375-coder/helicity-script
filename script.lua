@@ -29,14 +29,14 @@ local parentGui = getSafeGuiParent()
 if not parentGui then return end
 
 pcall(function()
-    local old1 = parentGui:FindFirstChild("HelicityProHubV51")
+    local old1 = parentGui:FindFirstChild("HelicityProHubV52")
     if old1 then old1:Destroy() end
-    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityProHubV51")
+    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityProHubV52")
     if old2 then old2:Destroy() end
 end)
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HelicityProHubV51"
+ScreenGui.Name = "HelicityProHubV52"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui
 
@@ -54,7 +54,7 @@ task.spawn(function()
 
     local tText = Instance.new("TextLabel")
     tText.Size = UDim2.new(1, 0, 1, 0)
-    tText.Text = "⚡ HELICITY PRO v5.1 FLAWLESS LOADED!"
+    tText.Text = "⚡ HELICITY PRO v5.2 ACTIVE!"
     tText.TextColor3 = Color3.fromRGB(255, 255, 255)
     tText.Font = Enum.Font.GothamBold
     tText.TextSize = 10.5
@@ -97,7 +97,7 @@ TitleCorner.Parent = TitleBar
 local TitleText = Instance.new("TextLabel")
 TitleText.Size = UDim2.new(1, -45, 1, 0)
 TitleText.Position = UDim2.new(0, 12, 0, 0)
-TitleText.Text = "⚡ HELICITY PRO v5.1 FLAWLESS"
+TitleText.Text = "⚡ HELICITY PRO v5.2 MASTER"
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleText.Font = Enum.Font.GothamBold
 TitleText.TextSize = 12
@@ -328,7 +328,6 @@ local function updateStateUI(badge, textLabel, stroke, state)
     end
 end
 
--- KESİN GERÇEK TORNADO ALGIYICI (BİNA VE İSTASYON ENGELLEME SİSTEMİ)
 local function getActiveTornadoPart()
     local bestPart = nil
     local highestScore = -1
@@ -338,7 +337,6 @@ local function getActiveTornadoPart()
         local name = obj.Name:lower()
         local fullPath = obj:GetFullName():lower()
 
-        -- Sıkı Kara Liste: Harita binaları, hava istasyonu, havaalanı, çitler ve evleri kesin engelle
         local isBlacklisted = name:find("zone") or name:find("track") or name:find("station") or name:find("radar") 
             or name:find("boundary") or name:find("area") or name:find("house") or name:find("building") 
             or name:find("structure") or name:find("mesonet") or name:find("airport") or name:find("prop")
@@ -355,17 +353,15 @@ local function getActiveTornadoPart()
                 end
 
                 if part then
-                    local score = 0
+                    local score = 10
                     
-                    -- Sadece içerisinde parçacık/görsel vortex efekti barındıran gerçek hortumlar
                     if obj:FindFirstChildWhichIsA("ParticleEmitter", true) or obj:FindFirstChildWhichIsA("Beam", true) or obj:FindFirstChildWhichIsA("Smoke", true) then
-                        score = score + 80
+                        score = score + 60
                     end
                     
-                    -- Büyüklük filtresi (Evlerin küçük dekorasyonlarını elemek için)
                     local sizeVector = obj:IsA("Model") and obj:GetExtentsSize() or part.Size
-                    if sizeVector.Y > 15 or sizeVector.X > 15 then
-                        score = score + 40
+                    if sizeVector.Y > 10 or sizeVector.X > 10 then
+                        score = score + 30
                     end
 
                     if playerPos then
@@ -373,7 +369,7 @@ local function getActiveTornadoPart()
                         score = score + math.max(0, 5000 - dist) / 50
                     end
 
-                    if score > highestScore and score >= 80 then
+                    if score > highestScore then
                         highestScore = score
                         bestPart = part
                     end
@@ -536,12 +532,8 @@ local function clearEsp()
     espElements = {}
 end
 
-local function applyEsp(obj)
-    if not isEspActive then return end
-    local tornadoPart = getActiveTornadoPart()
-    if not tornadoPart then return end
-
-    -- Sadece aktif doğrulanmış hortum nesnesine ESP ekle
+local function applyEsp(tornadoPart)
+    if not isEspActive or not tornadoPart then return end
     local targetObj = tornadoPart:FindFirstAncestorOfClass("Model") or tornadoPart
     if not espElements[targetObj] then
         local rootPart = tornadoPart
@@ -726,7 +718,7 @@ SpeedBtn.MouseButton1Click:Connect(function()
             end
         end)
     else
-        if speedLoop me speedLoop:Disconnect() speedLoop = nil end
+        if speedLoop then speedLoop:Disconnect() speedLoop = nil end
     end
 end)
 
