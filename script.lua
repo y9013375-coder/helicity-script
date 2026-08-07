@@ -29,21 +29,21 @@ local parentGui = getSafeGuiParent()
 if not parentGui then return end
 
 pcall(function()
-    local old1 = parentGui:FindFirstChild("HelicityMasterV92")
+    local old1 = parentGui:FindFirstChild("HelicityMasterV95")
     if old1 then old1:Destroy() end
-    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityMasterV92")
+    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityMasterV95")
     if old2 then old2:Destroy() end
 end)
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HelicityMasterV92"
+ScreenGui.Name = "HelicityMasterV95"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui
 
 task.spawn(function()
     local toast = Instance.new("Frame")
-    toast.Size = UDim2.new(0, 250, 0, 38)
-    toast.Position = UDim2.new(0.5, -125, 0.04, 0)
+    toast.Size = UDim2.new(0, 260, 0, 38)
+    toast.Position = UDim2.new(0.5, -130, 0.04, 0)
     toast.BackgroundColor3 = Color3.fromRGB(0, 180, 90)
     toast.BorderSizePixel = 0
     toast.Parent = ScreenGui
@@ -54,7 +54,7 @@ task.spawn(function()
 
     local tText = Instance.new("TextLabel")
     tText.Size = UDim2.new(1, 0, 1, 0)
-    tText.Text = "⚡ HELICITY PRO v9.2 BALANCED LOADED!"
+    tText.Text = "⚡ HELICITY PRO v9.5 FULL VISION ACTIVE!"
     tText.TextColor3 = Color3.fromRGB(255, 255, 255)
     tText.Font = Enum.Font.GothamBold
     tText.TextSize = 10.5
@@ -97,7 +97,7 @@ TitleCorner.Parent = TitleBar
 local TitleText = Instance.new("TextLabel")
 TitleText.Size = UDim2.new(1, -45, 1, 0)
 TitleText.Position = UDim2.new(0, 12, 0, 0)
-TitleText.Text = "⚡ HELICITY PRO v9.2 MASTER"
+TitleText.Text = "⚡ HELICITY PRO v9.5 MASTER"
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleText.Font = Enum.Font.GothamBold
 TitleText.TextSize = 11.5
@@ -307,7 +307,7 @@ local VehBtn, VehBadge, VehStatus, VehStroke = createToggle("ARABA KORUMASI", 4)
 local InvBtn, InvBadge, InvStatus, InvStroke = createToggle("ARABA İÇİ PROBE TOPLAMA", 5)
 local RadarBtn, RadarBadge, RadarStatus, RadarStroke = createToggle("CANLI TORNADO RADARI", 6)
 local SpeedBtn, SpeedBadge, SpeedStatus, SpeedStroke = createToggle("200 MPH ARABA HIZI", 7)
-local PcGraphicBtn, PcGraphicBadge, PcGraphicStatus, PcGraphicStroke = createToggle("PC TORNADO GRAPHICS", 8)
+local PcGraphicBtn, PcGraphicBadge, PcGraphicStatus, PcGraphicStroke = createToggle("FULL FUNNEL & GROUND VISION", 8)
 local FpsBtn, FpsBadge, FpsStatus, FpsStroke = createToggle("ULTRA FPS BOOSTER", 9)
 
 local isPedAnchored, isVehProtection, isInvForced = false, false, false
@@ -695,7 +695,7 @@ SpeedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- PC TORNADO GRAPHICS UNLOCKER (İNCELTİLMİŞ DENGELİ SİS / TORNADO NETLEŞTİRİCİ)
+-- FULL FUNNEL & GROUND VISION (ZEMİN TOZ/ENKAZ SİSİNİ KIRAN VE TAM HUNİ GÖSTEREN ENGINE)
 PcGraphicBtn.MouseButton1Click:Connect(function()
     isPcGraphicActive = not isPcGraphicActive
     updateStateUI(PcGraphicBadge, PcGraphicStatus, PcGraphicStroke, isPcGraphicActive)
@@ -714,25 +714,27 @@ PcGraphicBtn.MouseButton1Click:Connect(function()
                         sethiddenproperty(workspace, "MeshPartDetailLevel", Enum.MeshPartDetailLevel.DistanceBased)
                     end
                     
-                    -- Sis başlangıcını geriye çek, bitişini 60000 stud yaparak pus perdesini incelt
-                    Lighting.FogStart = 2500
-                    Lighting.FogEnd = 60000
+                    Lighting.FogStart = 3000
+                    Lighting.FogEnd = 80000
                     
                     if Workspace.StreamingEnabled then
-                        LocalPlayer.StreamingTargetRadius = 20000
+                        LocalPlayer.StreamingTargetRadius = 25000
                     end
                     
+                    -- Hortum parçacıklarının (Debris cloud & Funnel body) zeminde karanlık gölge oluşturmasını engelle
                     for _, v in ipairs(Workspace:GetDescendants()) do
                         if v:IsA("ParticleEmitter") or v:IsA("Beam") then
-                            v.LightInfluence = 0
+                            v.LightInfluence = 1
                             v.ZOffset = 2
+                            v.Enabled = true
                         end
                     end
 
                     for _, v in ipairs(Lighting:GetChildren()) do
                         if v:IsA("Atmosphere") then
-                            v.Density = 0.08
-                            v.Haze = 0.05
+                            v.Density = 0.04
+                            v.Haze = 0.02
+                            v.Glare = 0
                         elseif v:IsA("DepthOfFieldEffect") or v:IsA("BlurEffect") then
                             v.Enabled = false
                         end
