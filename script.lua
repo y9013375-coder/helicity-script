@@ -29,14 +29,14 @@ local parentGui = getSafeGuiParent()
 if not parentGui then return end
 
 pcall(function()
-    local old1 = parentGui:FindFirstChild("HelicityMasterpieceV5")
+    local old1 = parentGui:FindFirstChild("HelicityProHubV51")
     if old1 then old1:Destroy() end
-    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityMasterpieceV5")
+    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityProHubV51")
     if old2 then old2:Destroy() end
 end)
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HelicityMasterpieceV5"
+ScreenGui.Name = "HelicityProHubV51"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui
 
@@ -52,15 +52,9 @@ task.spawn(function()
     tCorner.CornerRadius = UDim.new(0, 8)
     tCorner.Parent = toast
 
-    local tStroke = Instance.new("UIStroke")
-    tStroke.Color = Color3.fromRGB(255, 255, 255)
-    tStroke.Thickness = 1
-    tStroke.Transparency = 0.5
-    tStroke.Parent = toast
-
     local tText = Instance.new("TextLabel")
     tText.Size = UDim2.new(1, 0, 1, 0)
-    tText.Text = "⚡ HELICITY PRO v5.0 MASTERPIECE LOADED!"
+    tText.Text = "⚡ HELICITY PRO v5.1 FLAWLESS LOADED!"
     tText.TextColor3 = Color3.fromRGB(255, 255, 255)
     tText.Font = Enum.Font.GothamBold
     tText.TextSize = 10.5
@@ -100,17 +94,10 @@ local TitleCorner = Instance.new("UICorner")
 TitleCorner.CornerRadius = UDim.new(0, 14)
 TitleCorner.Parent = TitleBar
 
-local TitleFix = Instance.new("Frame")
-TitleFix.Size = UDim2.new(1, 0, 0, 10)
-TitleFix.Position = UDim2.new(0, 0, 1, -10)
-TitleFix.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
-TitleFix.BorderSizePixel = 0
-TitleFix.Parent = TitleBar
-
 local TitleText = Instance.new("TextLabel")
 TitleText.Size = UDim2.new(1, -45, 1, 0)
 TitleText.Position = UDim2.new(0, 12, 0, 0)
-TitleText.Text = "⚡ HELICITY PRO v5.0 MASTER"
+TitleText.Text = "⚡ HELICITY PRO v5.1 FLAWLESS"
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleText.Font = Enum.Font.GothamBold
 TitleText.TextSize = 12
@@ -341,6 +328,7 @@ local function updateStateUI(badge, textLabel, stroke, state)
     end
 end
 
+-- KESİN GERÇEK TORNADO ALGIYICI (BİNA VE İSTASYON ENGELLEME SİSTEMİ)
 local function getActiveTornadoPart()
     local bestPart = nil
     local highestScore = -1
@@ -348,7 +336,16 @@ local function getActiveTornadoPart()
 
     for _, obj in ipairs(Workspace:GetDescendants()) do
         local name = obj.Name:lower()
-        if not name:find("zone") and not name:find("track") and not name:find("station") and not name:find("radar") and not name:find("boundary") and not name:find("area") and not name:find("gui") then
+        local fullPath = obj:GetFullName():lower()
+
+        -- Sıkı Kara Liste: Harita binaları, hava istasyonu, havaalanı, çitler ve evleri kesin engelle
+        local isBlacklisted = name:find("zone") or name:find("track") or name:find("station") or name:find("radar") 
+            or name:find("boundary") or name:find("area") or name:find("house") or name:find("building") 
+            or name:find("structure") or name:find("mesonet") or name:find("airport") or name:find("prop")
+            or name:find("tree") or name:find("road") or name:find("fence") or name:find("damage")
+            or fullPath:find("map") or fullPath:find("building") or fullPath:find("environment")
+
+        if not isBlacklisted then
             if name:find("tornado") or name:find("funnel") or name:find("vortex") or name:find("twister") or name:find("meso") or name:find("touchdown") then
                 local part = nil
                 if obj:IsA("BasePart") then
@@ -360,13 +357,15 @@ local function getActiveTornadoPart()
                 if part then
                     local score = 0
                     
+                    -- Sadece içerisinde parçacık/görsel vortex efekti barındıran gerçek hortumlar
                     if obj:FindFirstChildWhichIsA("ParticleEmitter", true) or obj:FindFirstChildWhichIsA("Beam", true) or obj:FindFirstChildWhichIsA("Smoke", true) then
-                        score = score + 60
+                        score = score + 80
                     end
                     
+                    -- Büyüklük filtresi (Evlerin küçük dekorasyonlarını elemek için)
                     local sizeVector = obj:IsA("Model") and obj:GetExtentsSize() or part.Size
-                    if sizeVector.Y > 12 or sizeVector.X > 12 then
-                        score = score + 30
+                    if sizeVector.Y > 15 or sizeVector.X > 15 then
+                        score = score + 40
                     end
 
                     if playerPos then
@@ -374,7 +373,7 @@ local function getActiveTornadoPart()
                         score = score + math.max(0, 5000 - dist) / 50
                     end
 
-                    if score > highestScore then
+                    if score > highestScore and score >= 80 then
                         highestScore = score
                         bestPart = part
                     end
@@ -539,46 +538,47 @@ end
 
 local function applyEsp(obj)
     if not isEspActive then return end
-    local name = obj.Name:lower()
-    if (name:find("tornado") or name:find("funnel") or name:find("vortex") or name:find("twister")) and not name:find("zone") and not name:find("track") then
-        if not espElements[obj] then
-            local rootPart = obj:IsA("BasePart") and obj or obj:FindFirstChildWhichIsA("BasePart", true)
-            if not rootPart then return end
+    local tornadoPart = getActiveTornadoPart()
+    if not tornadoPart then return end
 
-            local hl = Instance.new("Highlight")
-            hl.Name = "TornadoESP_Chams"
-            hl.FillColor = Color3.fromRGB(255, 30, 30)
-            hl.FillTransparency = 0.35
-            hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-            hl.OutlineTransparency = 0.1
-            hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-            hl.Adornee = obj
-            hl.Parent = obj
+    -- Sadece aktif doğrulanmış hortum nesnesine ESP ekle
+    local targetObj = tornadoPart:FindFirstAncestorOfClass("Model") or tornadoPart
+    if not espElements[targetObj] then
+        local rootPart = tornadoPart
 
-            local att0 = Instance.new("Attachment", rootPart)
-            local att1 = Instance.new("Attachment", Workspace.Terrain)
-            
-            local beam = Instance.new("Beam")
-            beam.Texture = "rbxassetid://431627270"
-            beam.TextureSpeed = 2
-            beam.TextureLength = 10
-            beam.Width0 = 14
-            beam.Width1 = 22
-            beam.Color = ColorSequence.new(Color3.fromRGB(255, 50, 50), Color3.fromRGB(255, 200, 0))
-            beam.FaceCamera = true
-            beam.Attachment0 = att0
-            beam.Attachment1 = att1
-            beam.Parent = rootPart
+        local hl = Instance.new("Highlight")
+        hl.Name = "TornadoESP_Chams"
+        hl.FillColor = Color3.fromRGB(255, 30, 30)
+        hl.FillTransparency = 0.35
+        hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+        hl.OutlineTransparency = 0.1
+        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        hl.Adornee = targetObj
+        hl.Parent = targetObj
 
-            espElements[obj] = {
-                Highlight = hl,
-                Beam = beam,
-                Att0 = att0,
-                Att1 = att1,
-                LastPos = rootPart.Position,
-                Part = rootPart
-            }
-        end
+        local att0 = Instance.new("Attachment", rootPart)
+        local att1 = Instance.new("Attachment", Workspace.Terrain)
+        
+        local beam = Instance.new("Beam")
+        beam.Texture = "rbxassetid://431627270"
+        beam.TextureSpeed = 2
+        beam.TextureLength = 10
+        beam.Width0 = 14
+        beam.Width1 = 22
+        beam.Color = ColorSequence.new(Color3.fromRGB(255, 50, 50), Color3.fromRGB(255, 200, 0))
+        beam.FaceCamera = true
+        beam.Attachment0 = att0
+        beam.Attachment1 = att1
+        beam.Parent = rootPart
+
+        espElements[targetObj] = {
+            Highlight = hl,
+            Beam = beam,
+            Att0 = att0,
+            Att1 = att1,
+            LastPos = rootPart.Position,
+            Part = rootPart
+        }
     end
 end
 
@@ -586,12 +586,17 @@ EspBtn.MouseButton1Click:Connect(function()
     isEspActive = not isEspActive
     updateStateUI(EspBadge, EspStatus, EspStroke, isEspActive)
     if isEspActive then
-        for _, obj in ipairs(Workspace:GetDescendants()) do
-            if obj:IsA("Model") or obj:IsA("BasePart") then applyEsp(obj) end
-        end
+        clearEsp()
         task.spawn(function()
             while isEspActive do
-                task.wait(0.15)
+                task.wait(0.2)
+                local tornadoPart = getActiveTornadoPart()
+                if tornadoPart then
+                    applyEsp(tornadoPart)
+                else
+                    clearEsp()
+                end
+
                 for obj, data in pairs(espElements) do
                     if data.Part and data.Part.Parent then
                         local currentPos = data.Part.Position
@@ -721,7 +726,7 @@ SpeedBtn.MouseButton1Click:Connect(function()
             end
         end)
     else
-        if speedLoop then speedLoop:Disconnect() speedLoop = nil end
+        if speedLoop me speedLoop:Disconnect() speedLoop = nil end
     end
 end)
 
