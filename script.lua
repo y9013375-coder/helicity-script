@@ -1,38 +1,30 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local CoreGui = game:GetService("CoreGui")
 local StarterGui = game:GetService("StarterGui")
 local Lighting = game:GetService("Lighting")
 local Workspace = game:GetService("Workspace")
+
 local LocalPlayer = Players.LocalPlayer
+while not LocalPlayer do
+    task.wait(0.1)
+    LocalPlayer = Players.LocalPlayer
+end
 
 local playerGui = LocalPlayer:WaitForChild("PlayerGui", 10)
 if not playerGui then return end
 
-local oldGui = playerGui:FindFirstChild("HelicityMobileUltimateV5") or CoreGui:FindFirstChild("HelicityMobileUltimateV5")
+local oldGui = playerGui:FindFirstChild("HelicityProHubFinal")
 if oldGui then oldGui:Destroy() end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HelicityMobileUltimateV5"
+ScreenGui.Name = "HelicityProHubFinal"
 ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = playerGui
 
-if gethui then
-    pcall(function() ScreenGui.Parent = gethui() end)
-end
-if not ScreenGui.Parent then
-    pcall(function() ScreenGui.Parent = CoreGui end)
-end
-if not ScreenGui.Parent then
-    ScreenGui.Parent = playerGui
-end
-
--- =======================================================
--- 1. ANA PENCERE (MOBILE RESIZABLE UI)
--- =======================================================
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 250, 0, 360)
+MainFrame.Size = UDim2.new(0, 250, 0, 350)
 MainFrame.Position = UDim2.new(0.5, -125, 0.1, 0)
-MainFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
@@ -45,13 +37,11 @@ MainCorner.Parent = MainFrame
 local MainStroke = Instance.new("UIStroke")
 MainStroke.Color = Color3.fromRGB(0, 170, 255)
 MainStroke.Thickness = 1.5
-MainStroke.Transparency = 0.2
 MainStroke.Parent = MainFrame
 
--- Başlık
 local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 36)
-TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
+TitleBar.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
 TitleBar.BorderSizePixel = 0
 TitleBar.Parent = MainFrame
 
@@ -59,17 +49,10 @@ local TitleCorner = Instance.new("UICorner")
 TitleCorner.CornerRadius = UDim.new(0, 12)
 TitleCorner.Parent = TitleBar
 
-local TitleFix = Instance.new("Frame")
-TitleFix.Size = UDim2.new(1, 0, 0, 10)
-TitleFix.Position = UDim2.new(0, 0, 1, -10)
-TitleFix.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
-TitleFix.BorderSizePixel = 0
-TitleFix.Parent = TitleBar
-
 local TitleText = Instance.new("TextLabel")
 TitleText.Size = UDim2.new(1, -45, 1, 0)
 TitleText.Position = UDim2.new(0, 12, 0, 0)
-TitleText.Text = "⚡ HELICITY ULTIMATE v5.0"
+TitleText.Text = "⚡ HELICITY ULTIMATE"
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleText.Font = Enum.Font.GothamBold
 TitleText.TextSize = 12
@@ -94,7 +77,7 @@ MinBtnCorner.Parent = MinimizeBtn
 local OpenBtn = Instance.new("TextButton")
 OpenBtn.Size = UDim2.new(0, 48, 0, 48)
 OpenBtn.Position = UDim2.new(0, 10, 0.35, 0)
-OpenBtn.BackgroundColor3 = Color3.fromRGB(14, 14, 20)
+OpenBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 OpenBtn.Text = "⚡"
 OpenBtn.TextColor3 = Color3.fromRGB(0, 170, 255)
 OpenBtn.TextSize = 20
@@ -118,7 +101,7 @@ ScrollContainer.Position = UDim2.new(0, 6, 0, 38)
 ScrollContainer.BackgroundTransparency = 1
 ScrollContainer.ScrollBarThickness = 2
 ScrollContainer.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
-ScrollContainer.CanvasSize = UDim2.new(0, 0, 0, 340)
+ScrollContainer.CanvasSize = UDim2.new(0, 0, 0, 330)
 ScrollContainer.Parent = MainFrame
 
 local UIList = Instance.new("UIListLayout")
@@ -126,13 +109,10 @@ UIList.Padding = UDim.new(0, 6)
 UIList.SortOrder = Enum.SortOrder.LayoutOrder
 UIList.Parent = ScrollContainer
 
--- =======================================================
--- 2. CANLI TORNADO RADAR HUD (MİNİ SÜRÜKLENEBİLİR WİDGET)
--- =======================================================
 local RadarFrame = Instance.new("Frame")
-RadarFrame.Size = UDim2.new(0, 210, 0, 155)
+RadarFrame.Size = UDim2.new(0, 210, 0, 150)
 RadarFrame.Position = UDim2.new(0, 10, 0.55, 0)
-RadarFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 20)
+RadarFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 RadarFrame.BorderSizePixel = 0
 RadarFrame.Active = true
 RadarFrame.Draggable = true
@@ -150,7 +130,6 @@ RadarStroke.Parent = RadarFrame
 
 local RadarTitle = Instance.new("TextLabel")
 RadarTitle.Size = UDim2.new(1, 0, 0, 24)
-RadarTitle.Position = UDim2.new(0, 0, 0, 2)
 RadarTitle.Text = "📡 CANLI TORNADO RADARI"
 RadarTitle.TextColor3 = Color3.fromRGB(255, 165, 0)
 RadarTitle.Font = Enum.Font.GothamBold
@@ -166,7 +145,6 @@ RadarContainer.Parent = RadarFrame
 
 local RadarList = Instance.new("UIListLayout")
 RadarList.Padding = UDim.new(0, 2)
-RadarList.SortOrder = Enum.SortOrder.LayoutOrder
 RadarList.Parent = RadarContainer
 
 local function createRadarRow(labelTitle)
@@ -189,9 +167,6 @@ local WindRow = createRadarRow("💨 Rüzgar Hızı")
 local WidthRow = createRadarRow("📐 Genişlik (Çap)")
 local EfRow = createRadarRow("⚠️ EF Seviyesi")
 
--- =======================================================
--- BUTON OLUŞTURUCU FABRİKA
--- =======================================================
 local function createToggle(titleText, order)
     local buttonFrame = Instance.new("Frame")
     buttonFrame.Size = UDim2.new(1, 0, 0, 40)
@@ -261,7 +236,6 @@ local isPedAnchored, isVehProtection, isInvForced = false, false, false
 local isEspActive, isRadarActive, isSpeedBoosted, isFpsBoosted = false, false, false, false
 local pedLoop, vehLoop, invLoop, speedLoop, radarTask = nil, nil, nil, nil, nil
 local espElements = {}
-local originalLightingState = {}
 
 local function updateStateUI(badge, textLabel, stroke, state)
     if state then
@@ -348,7 +322,7 @@ VehBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 3. ARABA İÇİ PROBE TOPLAMA & ENVANTER
+-- 3. ARABA İÇİ ENVANTER
 InvBtn.MouseButton1Click:Connect(function()
     isInvForced = not isInvForced
     updateStateUI(InvBadge, InvStatus, InvStroke, isInvForced)
@@ -371,7 +345,7 @@ InvBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 4. ESP & 3D YÖN OKU (KASMA ÖNLEYİCİ)
+-- 4. ESP & YÖN OKU
 local function clearEsp()
     for obj, items in pairs(espElements) do
         pcall(function()
@@ -459,7 +433,7 @@ EspBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 5. CANLI TORNADO RADARI
+-- 5. CANLI RADAR
 RadarBtn.MouseButton1Click:Connect(function()
     isRadarActive = not isRadarActive
     updateStateUI(RadarBadge, RadarStatus, RadarStroke, isRadarActive)
@@ -508,4 +482,28 @@ RadarBtn.MouseButton1Click:Connect(function()
                         if distMoved > 0.15 then
                             local compassName, deg = getCompassDirection(moveVec.Unit)
                             headingStr = compassName .. " (" .. deg .. "°)"
-          
+                        end
+                    end
+                    lastTornadoPos = currentPos
+
+                    local sizeX = 40
+                    if closestTornado.Model:IsA("Model") then
+                        local size = closestTornado.Model:GetExtentsSize()
+                        sizeX = math.floor(math.max(size.X, size.Z))
+                    end
+
+                    local windSpeedMph = math.floor((sizeX * 2.2) + (moveSpeedMph * 2.8) + 40)
+                    local efScale = "EF0"
+                    local efColor = Color3.fromRGB(120, 220, 120)
+
+                    if windSpeedMph >= 200 or sizeX > 250 then
+                        efScale = "EF5 😈"
+                        efColor = Color3.fromRGB(255, 0, 0)
+                    elseif windSpeedMph >= 165 or sizeX > 190 then
+                        efScale = "EF4 🩸"
+                        efColor = Color3.fromRGB(255, 70, 0)
+                    elseif windSpeedMph >= 135 or sizeX > 140 then
+                        efScale = "EF3 ⚡"
+                        efColor = Color3.fromRGB(255, 140, 0)
+                    elseif windSpeedMph >= 110 or sizeX > 90 then
+           
