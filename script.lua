@@ -9,11 +9,11 @@ local LocalPlayer = Players.LocalPlayer
 local playerGui = LocalPlayer:WaitForChild("PlayerGui", 10)
 if not playerGui then return end
 
-local oldGui = playerGui:FindFirstChild("HelicityProHubV421") or CoreGui:FindFirstChild("HelicityProHubV421")
+local oldGui = playerGui:FindFirstChild("HelicityProHubV422") or CoreGui:FindFirstChild("HelicityProHubV422")
 if oldGui then oldGui:Destroy() end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HelicityProHubV421"
+ScreenGui.Name = "HelicityProHubV422"
 ScreenGui.ResetOnSpawn = false
 
 if gethui then
@@ -27,8 +27,8 @@ if not ScreenGui.Parent then
 end
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 260, 0, 370)
-MainFrame.Position = UDim2.new(0.5, -130, 0.12, 0)
+MainFrame.Size = UDim2.new(0, 260, 0, 440)
+MainFrame.Position = UDim2.new(0.5, -130, 0.1, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -65,7 +65,7 @@ TitleFix.Parent = TitleBar
 local TitleText = Instance.new("TextLabel")
 TitleText.Size = UDim2.new(1, -45, 1, 0)
 TitleText.Position = UDim2.new(0, 12, 0, 0)
-TitleText.Text = "⚡ HELICITY PRO v4.2.1 ULTRA"
+TitleText.Text = "⚡ HELICITY PRO v4.2.2 TP"
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleText.Font = Enum.Font.GothamBold
 TitleText.TextSize = 12.5
@@ -114,7 +114,7 @@ ScrollContainer.Position = UDim2.new(0, 8, 0, 40)
 ScrollContainer.BackgroundTransparency = 1
 ScrollContainer.ScrollBarThickness = 2
 ScrollContainer.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
-ScrollContainer.CanvasSize = UDim2.new(0, 0, 0, 350)
+ScrollContainer.CanvasSize = UDim2.new(0, 0, 0, 460)
 ScrollContainer.Parent = MainFrame
 
 local UIList = Instance.new("UIListLayout")
@@ -239,13 +239,45 @@ local function createToggle(titleText, order)
     return triggerBtn, statusBadge, statusText, bStroke
 end
 
-local PedBtn, PedBadge, PedStatus, PedStroke = createToggle("YERDE SABİTLE", 1)
-local VehBtn, VehBadge, VehStatus, VehStroke = createToggle("ARABA KORUMASI", 2)
-local InvBtn, InvBadge, InvStatus, InvStroke = createToggle("ARABA İÇİ PROBE TOPLAMA", 3)
-local EspBtn, EspBadge, EspStatus, EspStroke = createToggle("TORNADO ESP & YÖN OKU", 4)
-local RadarBtn, RadarBadge, RadarStatus, RadarStroke = createToggle("CANLI TORNADO RADARI", 5)
-local SpeedBtn, SpeedBadge, SpeedStatus, SpeedStroke = createToggle("200 MPH ARABA HIZI", 6)
-local FpsBtn, FpsBadge, FpsStatus, FpsStroke = createToggle("SOFT FPS BOOSTER", 7)
+local function createActionButton(titleText, order, color)
+    local buttonFrame = Instance.new("Frame")
+    buttonFrame.Size = UDim2.new(1, 0, 0, 42)
+    buttonFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 33)
+    buttonFrame.BorderSizePixel = 0
+    buttonFrame.LayoutOrder = order
+    buttonFrame.Parent = ScrollContainer
+
+    local bCorner = Instance.new("UICorner")
+    bCorner.CornerRadius = UDim.new(0, 8)
+    bCorner.Parent = buttonFrame
+
+    local bStroke = Instance.new("UIStroke")
+    bStroke.Color = color or Color3.fromRGB(0, 170, 255)
+    bStroke.Thickness = 1
+    bStroke.Parent = buttonFrame
+
+    local triggerBtn = Instance.new("TextButton")
+    triggerBtn.Size = UDim2.new(1, 0, 1, 0)
+    triggerBtn.BackgroundTransparency = 1
+    triggerBtn.Text = titleText
+    triggerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    triggerBtn.Font = Enum.Font.GothamBold
+    triggerBtn.TextSize = 11
+    triggerBtn.Parent = buttonFrame
+
+    return triggerBtn
+end
+
+local TpPedBtn = createActionButton("🌀 HORTUMA ISINLAN (YAYAN)", 1, Color3.fromRGB(138, 43, 226))
+local TpVehBtn = createActionButton("🚗 HORTUMA ISINLAN (ARABA ILE)", 2, Color3.fromRGB(255, 140, 0))
+
+local PedBtn, PedBadge, PedStatus, PedStroke = createToggle("YERDE SABİTLE", 3)
+local VehBtn, VehBadge, VehStatus, VehStroke = createToggle("ARABA KORUMASI", 4)
+local InvBtn, InvBadge, InvStatus, InvStroke = createToggle("ARABA İÇİ PROBE TOPLAMA", 5)
+local EspBtn, EspBadge, EspStatus, EspStroke = createToggle("TORNADO ESP & YÖN OKU", 6)
+local RadarBtn, RadarBadge, RadarStatus, RadarStroke = createToggle("CANLI TORNADO RADARI", 7)
+local SpeedBtn, SpeedBadge, SpeedStatus, SpeedStroke = createToggle("200 MPH ARABA HIZI", 8)
+local FpsBtn, FpsBadge, FpsStatus, FpsStroke = createToggle("SOFT FPS BOOSTER", 9)
 
 local isPedAnchored, isVehProtection, isInvForced = false, false, false
 local isEspActive, isRadarActive, isSpeedBoosted, isFpsBoosted = false, false, false, false
@@ -265,31 +297,58 @@ local function updateStateUI(badge, textLabel, stroke, state)
     end
 end
 
-local function getCompassDirection(dirVector)
-    local angle = math.atan2(dirVector.X, -dirVector.Z)
-    local degNormalized = (math.deg(angle)) % 360
-
-    if degNormalized >= 337.5 or degNormalized < 22.5 then
-        return "K (Kuzey)", math.floor(degNormalized)
-    elseif degNormalized >= 22.5 and degNormalized < 67.5 then
-        return "KD (Kuzeydoğu)", math.floor(degNormalized)
-    elseif degNormalized >= 67.5 and degNormalized < 112.5 then
-        return "D (Doğu)", math.floor(degNormalized)
-    elseif degNormalized >= 112.5 and degNormalized < 157.5 then
-        return "GD (Güneydoğu)", math.floor(degNormalized)
-    elseif degNormalized >= 157.5 and degNormalized < 202.5 then
-        return "G (Güney)", math.floor(degNormalized)
-    elseif degNormalized >= 202.5 and degNormalized < 247.5 then
-        return "GB (Güneybatı)", math.floor(degNormalized)
-    elseif degNormalized >= 247.5 and degNormalized < 292.5 then
-        return "B (Batı)", math.floor(degNormalized)
-    elseif degNormalized >= 292.5 and degNormalized < 337.5 then
-        return "KB (Kuzeybatı)", math.floor(degNormalized)
+-- TORNADO BULMA FONKSİYONU
+local function getActiveTornadoPart()
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        local name = obj.Name:lower()
+        if (name:find("tornado") or name:find("funnel") or name:find("vortex") or name:find("meso") or name:find("twister")) and (obj:IsA("Model") or obj:IsA("BasePart")) then
+            local part = obj:IsA("BasePart") and obj or obj:FindFirstChildWhichIsA("BasePart", true)
+            if part then
+                return part
+            end
+        end
     end
-    return "Bilinmiyor", 0
+    return nil
 end
 
--- 1. YERDE SABİTLE
+-- 1. YAYAN TORNADO TP
+TpPedBtn.MouseButton1Click:Connect(function()
+    local tornadoPart = getActiveTornadoPart()
+    if not tornadoPart then return end
+    
+    local char = LocalPlayer.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        local targetCFrame = tornadoPart.CFrame * CFrame.new(0, 10, -300)
+        char.HumanoidRootPart.CFrame = targetCFrame
+    end
+end)
+
+-- 2. ARABALI TORNADO TP
+TpVehBtn.MouseButton1Click:Connect(function()
+    local tornadoPart = getActiveTornadoPart()
+    if not tornadoPart then return end
+    
+    local char = LocalPlayer.Character
+    if char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum and hum.SeatPart then
+            local seat = hum.SeatPart
+            local vehicle = seat:FindFirstAncestorOfClass("Model") or seat.Parent
+            if vehicle then
+                local primary = vehicle.PrimaryPart or seat
+                local targetCFrame = tornadoPart.CFrame * CFrame.new(0, 12, -350)
+                vehicle:PivotTo(targetCFrame)
+            end
+        else
+            local targetCFrame = tornadoPart.CFrame * CFrame.new(0, 10, -300)
+            if char:FindFirstChild("HumanoidRootPart") then
+                char.HumanoidRootPart.CFrame = targetCFrame
+            end
+        end
+    end
+end)
+
+-- YERDE SABİTLE
 PedBtn.MouseButton1Click:Connect(function()
     isPedAnchored = not isPedAnchored
     updateStateUI(PedBadge, PedStatus, PedStroke, isPedAnchored)
@@ -309,7 +368,7 @@ PedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 2. ARABA KORUMASI
+-- ARABA KORUMASI
 VehBtn.MouseButton1Click:Connect(function()
     isVehProtection = not isVehProtection
     updateStateUI(VehBadge, VehStatus, VehStroke, isVehProtection)
@@ -338,7 +397,7 @@ VehBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 3. ARABA İÇİ ENVANTER
+-- ARABA İÇİ ENVANTER
 InvBtn.MouseButton1Click:Connect(function()
     isInvForced = not isInvForced
     updateStateUI(InvBadge, InvStatus, InvStroke, isInvForced)
@@ -361,7 +420,7 @@ InvBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 4. ESP & YÖN OKU
+-- ESP & YÖN OKU
 local function clearEsp()
     for obj, items in pairs(espElements) do
         pcall(function()
@@ -449,7 +508,7 @@ EspBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 5. CANLI RADAR
+-- CANLI RADAR
 RadarBtn.MouseButton1Click:Connect(function()
     isRadarActive = not isRadarActive
     updateStateUI(RadarBadge, RadarStatus, RadarStroke, isRadarActive)
@@ -496,8 +555,7 @@ RadarBtn.MouseButton1Click:Connect(function()
                         local distMoved = moveVec.Magnitude
                         moveSpeedMph = math.floor((distMoved / dt) * 1.5)
                         if distMoved > 0.15 then
-                            local compassName, deg = getCompassDirection(moveVec.Unit)
-                            headingStr = compassName .. " (" .. deg .. "°)"
+                            headingStr = "Aktif Ilerliyor"
                         end
                     end
                     lastTornadoPos = currentPos
@@ -552,7 +610,7 @@ RadarBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 6. 200 MPH ARABA HIZI (STABİL)
+-- 200 MPH ARABA HIZI
 SpeedBtn.MouseButton1Click:Connect(function()
     isSpeedBoosted = not isSpeedBoosted
     updateStateUI(SpeedBadge, SpeedStatus, SpeedStroke, isSpeedBoosted)
@@ -579,7 +637,7 @@ SpeedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 7. SOFT FPS BOOSTER
+-- SOFT FPS BOOSTER
 FpsBtn.MouseButton1Click:Connect(function()
     isFpsBoosted = not isFpsBoosted
     updateStateUI(FpsBadge, FpsStatus, FpsStroke, isFpsBoosted)
