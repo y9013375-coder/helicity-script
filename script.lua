@@ -29,14 +29,14 @@ local parentGui = getSafeGuiParent()
 if not parentGui then return end
 
 pcall(function()
-    local old1 = parentGui:FindFirstChild("HelicityMasterV91")
+    local old1 = parentGui:FindFirstChild("HelicityMasterV92")
     if old1 then old1:Destroy() end
-    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityMasterV91")
+    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityMasterV92")
     if old2 then old2:Destroy() end
 end)
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HelicityMasterV91"
+ScreenGui.Name = "HelicityMasterV92"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui
 
@@ -54,7 +54,7 @@ task.spawn(function()
 
     local tText = Instance.new("TextLabel")
     tText.Size = UDim2.new(1, 0, 1, 0)
-    tText.Text = "⚡ HELICITY PRO v9.1 ACTIVE!"
+    tText.Text = "⚡ HELICITY PRO v9.2 BALANCED LOADED!"
     tText.TextColor3 = Color3.fromRGB(255, 255, 255)
     tText.Font = Enum.Font.GothamBold
     tText.TextSize = 10.5
@@ -97,7 +97,7 @@ TitleCorner.Parent = TitleBar
 local TitleText = Instance.new("TextLabel")
 TitleText.Size = UDim2.new(1, -45, 1, 0)
 TitleText.Position = UDim2.new(0, 12, 0, 0)
-TitleText.Text = "⚡ HELICITY PRO v9.1 MASTER"
+TitleText.Text = "⚡ HELICITY PRO v9.2 MASTER"
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleText.Font = Enum.Font.GothamBold
 TitleText.TextSize = 11.5
@@ -655,7 +655,6 @@ RadarBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- TAM ÇALIŞAN GÜÇLENDİRİLMİŞ 200 MPH ARABA HIZI
 SpeedBtn.MouseButton1Click:Connect(function()
     isSpeedBoosted = not isSpeedBoosted
     updateStateUI(SpeedBadge, SpeedStatus, SpeedStroke, isSpeedBoosted)
@@ -696,7 +695,7 @@ SpeedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- PC TORNADO GRAPHICS UNLOCKER (ZORLAMALI GRAFİK SEVİYESİ ENJÖKTÖRÜ)
+-- PC TORNADO GRAPHICS UNLOCKER (İNCELTİLMİŞ DENGELİ SİS / TORNADO NETLEŞTİRİCİ)
 PcGraphicBtn.MouseButton1Click:Connect(function()
     isPcGraphicActive = not isPcGraphicActive
     updateStateUI(PcGraphicBadge, PcGraphicStatus, PcGraphicStroke, isPcGraphicActive)
@@ -709,15 +708,15 @@ PcGraphicBtn.MouseButton1Click:Connect(function()
         graphicLoop = RunService.Heartbeat:Connect(function()
             if isPcGraphicActive then
                 pcall(function()
-                    -- Roblox Grafik Seviyesini PC Seviyesine (Level 21) Zorla
                     settings().Rendering.QualityLevel = Enum.QualityLevel.Level21
                     
                     if setshiddenproperty then
                         sethiddenproperty(workspace, "MeshPartDetailLevel", Enum.MeshPartDetailLevel.DistanceBased)
                     end
                     
-                    Lighting.FogStart = 800
-                    Lighting.FogEnd = 50000
+                    -- Sis başlangıcını geriye çek, bitişini 60000 stud yaparak pus perdesini incelt
+                    Lighting.FogStart = 2500
+                    Lighting.FogEnd = 60000
                     
                     if Workspace.StreamingEnabled then
                         LocalPlayer.StreamingTargetRadius = 20000
@@ -732,8 +731,8 @@ PcGraphicBtn.MouseButton1Click:Connect(function()
 
                     for _, v in ipairs(Lighting:GetChildren()) do
                         if v:IsA("Atmosphere") then
-                            v.Density = 0.10
-                            v.Haze = 0
+                            v.Density = 0.08
+                            v.Haze = 0.05
                         elseif v:IsA("DepthOfFieldEffect") or v:IsA("BlurEffect") then
                             v.Enabled = false
                         end
@@ -756,6 +755,7 @@ PcGraphicBtn.MouseButton1Click:Connect(function()
             for _, v in ipairs(Lighting:GetChildren()) do
                 if v:IsA("Atmosphere") then
                     v.Density = 0.35
+                    v.Haze = 0
                 elseif v:IsA("DepthOfFieldEffect") or v:IsA("BlurEffect") then
                     v.Enabled = true
                 end
