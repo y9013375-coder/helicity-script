@@ -29,14 +29,14 @@ local parentGui = getSafeGuiParent()
 if not parentGui then return end
 
 pcall(function()
-    local old1 = parentGui:FindFirstChild("HelicityMasterV7")
+    local old1 = parentGui:FindFirstChild("HelicityMasterV81")
     if old1 then old1:Destroy() end
-    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityMasterV7")
+    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityMasterV81")
     if old2 then old2:Destroy() end
 end)
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HelicityMasterV7"
+ScreenGui.Name = "HelicityMasterV81"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui
 
@@ -54,7 +54,7 @@ task.spawn(function()
 
     local tText = Instance.new("TextLabel")
     tText.Size = UDim2.new(1, 0, 1, 0)
-    tText.Text = "⚡ HELICITY PRO v7.0 MASTER ACTIVE!"
+    tText.Text = "⚡ HELICITY PRO v8.1 ACTIVE!"
     tText.TextColor3 = Color3.fromRGB(255, 255, 255)
     tText.Font = Enum.Font.GothamBold
     tText.TextSize = 10.5
@@ -66,7 +66,7 @@ task.spawn(function()
 end)
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 260, 0, 380)
+MainFrame.Size = UDim2.new(0, 260, 0, 420)
 MainFrame.Position = UDim2.new(0.5, -130, 0.1, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
 MainFrame.BorderSizePixel = 0
@@ -97,7 +97,7 @@ TitleCorner.Parent = TitleBar
 local TitleText = Instance.new("TextLabel")
 TitleText.Size = UDim2.new(1, -45, 1, 0)
 TitleText.Position = UDim2.new(0, 12, 0, 0)
-TitleText.Text = "⚡ HELICITY PRO v7.0 MASTER"
+TitleText.Text = "⚡ HELICITY PRO v8.1 MASTER"
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleText.Font = Enum.Font.GothamBold
 TitleText.TextSize = 12
@@ -146,7 +146,7 @@ ScrollContainer.Position = UDim2.new(0, 7, 0, 42)
 ScrollContainer.BackgroundTransparency = 1
 ScrollContainer.ScrollBarThickness = 3
 ScrollContainer.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
-ScrollContainer.CanvasSize = UDim2.new(0, 0, 0, 460)
+ScrollContainer.CanvasSize = UDim2.new(0, 0, 0, 510)
 ScrollContainer.Parent = MainFrame
 
 local UIList = Instance.new("UIListLayout")
@@ -307,12 +307,13 @@ local VehBtn, VehBadge, VehStatus, VehStroke = createToggle("ARABA KORUMASI", 4)
 local InvBtn, InvBadge, InvStatus, InvStroke = createToggle("ARABA İÇİ PROBE TOPLAMA", 5)
 local RadarBtn, RadarBadge, RadarStatus, RadarStroke = createToggle("CANLI TORNADO RADARI", 6)
 local SpeedBtn, SpeedBadge, SpeedStatus, SpeedStroke = createToggle("200 MPH ARABA HIZI", 7)
-local FpsBtn, FpsBadge, FpsStatus, FpsStroke = createToggle("SOFT FPS BOOSTER", 8)
+local RenderBtn, RenderBadge, RenderStatus, RenderStroke = createToggle("MAX RENDER MESAFESİ", 8)
+local FpsBtn, FpsBadge, FpsStatus, FpsStroke = createToggle("ULTRA FPS BOOSTER", 9)
 
 local isPedAnchored, isVehProtection, isInvForced = false, false, false
-local isRadarActive, isSpeedBoosted, isFpsBoosted = false, false, false
-local pedLoop, vehLoop, invLoop, speedLoop, radarTask = nil, nil, nil, nil, nil
-local originalLightingState = {}
+local isRadarActive, isSpeedBoosted, isRenderBoosted, isFpsBoosted = false, false, false, false
+local pedLoop, vehLoop, invLoop, speedLoop, renderLoop = nil, nil, nil, nil, nil
+local originalLighting = {}
 
 local function updateStateUI(badge, textLabel, stroke, state)
     if state then
@@ -605,7 +606,7 @@ RadarBtn.MouseButton1Click:Connect(function()
 
                     local sizeX = 45
                     local parentModel = closestTornadoPart:FindFirstAncestorOfClass("Model")
-                    if parentModel then
+                    if parentModel me then
                         local size = parentModel:GetExtentsSize()
                         sizeX = math.floor(math.max(size.X, size.Z))
                     end
@@ -680,34 +681,68 @@ SpeedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- MAX RENDER MESAFESİ (SİS/ATMOSFER BOZULMADAN SADECE MAX ÇİZİM MESAFA ARTIRMA)
+RenderBtn.MouseButton1Click:Connect(function()
+    isRenderBoosted = not isRenderBoosted
+    updateStateUI(RenderBadge, RenderStatus, RenderStroke, isRenderBoosted)
+    
+    if isRenderBoosted then
+        if renderLoop then renderLoop:Disconnect() end
+        renderLoop = RunService.Heartbeat:Connect(function()
+            if isRenderBoosted then
+                pcall(function()
+                    if Workspace.StreamingEnabled then
+                        LocalPlayer.StreamingTargetRadius = 10000
+                    end
+                    settings().Rendering.QualityLevel = Enum.QualityLevel.Level21
+                end)
+            end
+        end)
+    else
+        if renderLoop then renderLoop:Disconnect() renderLoop = nil end
+        pcall(function()
+            if Workspace.StreamingEnabled then
+                LocalPlayer.StreamingTargetRadius = 1024
+            end
+            settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+        end)
+    end
+end)
+
+-- ULTRA FPS BOOSTER (DOKU VE EFEKT DÜŞÜRÜCÜ)
 FpsBtn.MouseButton1Click:Connect(function()
     isFpsBoosted = not isFpsBoosted
     updateStateUI(FpsBadge, FpsStatus, FpsStroke, isFpsBoosted)
     if isFpsBoosted then
         pcall(function()
-            originalLightingState.GlobalShadows = Lighting.GlobalShadows
+            originalLighting.GlobalShadows = Lighting.GlobalShadows
             Lighting.GlobalShadows = false
+            
             for _, v in ipairs(Lighting:GetChildren()) do
-                if v:IsA("PostEffect") or v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
+                if v:IsA("PostEffect") or v:IsA("SunRaysEffect") or v:IsA("BloomEffect") then
                     v.Enabled = false
                 end
             end
+            
             local terrain = Workspace:FindFirstChildOfClass("Terrain")
             if terrain then terrain.Decoration = false end
+            
             for _, v in ipairs(Workspace:GetDescendants()) do
                 if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
                     v.Enabled = false
+                elseif v:IsA("BasePart") and not v:IsA("MeshPart") then
+                    v.Material = Enum.Material.SmoothPlastic
                 end
             end
             if setfpscap then setfpscap(120) end
         end)
     else
         pcall(function()
-            if originalLightingState.GlobalShadows ~= nil then
-                Lighting.GlobalShadows = originalLightingState.GlobalShadows
+            if originalLighting.GlobalShadows ~= nil then
+                Lighting.GlobalShadows = originalLighting.GlobalShadows
             end
             for _, v in ipairs(Lighting:GetChildren()) do
-                if v:IsA("PostEffect") or v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
+                if v:IsA("PostEffect") or v:IsA("SunRaysEffect") or v:IsA("BloomEffect") then
                     v.Enabled = true
                 end
             end
