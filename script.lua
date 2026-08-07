@@ -29,21 +29,21 @@ local parentGui = getSafeGuiParent()
 if not parentGui then return end
 
 pcall(function()
-    local old1 = parentGui:FindFirstChild("HelicityMasterV82")
+    local old1 = parentGui:FindFirstChild("HelicityMasterV91")
     if old1 then old1:Destroy() end
-    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityMasterV82")
+    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityMasterV91")
     if old2 then old2:Destroy() end
 end)
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HelicityMasterV82"
+ScreenGui.Name = "HelicityMasterV91"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui
 
 task.spawn(function()
     local toast = Instance.new("Frame")
-    toast.Size = UDim2.new(0, 240, 0, 38)
-    toast.Position = UDim2.new(0.5, -120, 0.04, 0)
+    toast.Size = UDim2.new(0, 250, 0, 38)
+    toast.Position = UDim2.new(0.5, -125, 0.04, 0)
     toast.BackgroundColor3 = Color3.fromRGB(0, 180, 90)
     toast.BorderSizePixel = 0
     toast.Parent = ScreenGui
@@ -54,7 +54,7 @@ task.spawn(function()
 
     local tText = Instance.new("TextLabel")
     tText.Size = UDim2.new(1, 0, 1, 0)
-    tText.Text = "⚡ HELICITY PRO v8.2 ACTIVE!"
+    tText.Text = "⚡ HELICITY PRO v9.1 ACTIVE!"
     tText.TextColor3 = Color3.fromRGB(255, 255, 255)
     tText.Font = Enum.Font.GothamBold
     tText.TextSize = 10.5
@@ -97,10 +97,10 @@ TitleCorner.Parent = TitleBar
 local TitleText = Instance.new("TextLabel")
 TitleText.Size = UDim2.new(1, -45, 1, 0)
 TitleText.Position = UDim2.new(0, 12, 0, 0)
-TitleText.Text = "⚡ HELICITY PRO v8.2 MASTER"
+TitleText.Text = "⚡ HELICITY PRO v9.1 MASTER"
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleText.Font = Enum.Font.GothamBold
-TitleText.TextSize = 12
+TitleText.TextSize = 11.5
 TitleText.TextXAlignment = Enum.TextXAlignment.Left
 TitleText.BackgroundTransparency = 1
 TitleText.Parent = TitleBar
@@ -307,12 +307,12 @@ local VehBtn, VehBadge, VehStatus, VehStroke = createToggle("ARABA KORUMASI", 4)
 local InvBtn, InvBadge, InvStatus, InvStroke = createToggle("ARABA İÇİ PROBE TOPLAMA", 5)
 local RadarBtn, RadarBadge, RadarStatus, RadarStroke = createToggle("CANLI TORNADO RADARI", 6)
 local SpeedBtn, SpeedBadge, SpeedStatus, SpeedStroke = createToggle("200 MPH ARABA HIZI", 7)
-local RenderBtn, RenderBadge, RenderStatus, RenderStroke = createToggle("MAX RENDER MESAFESİ", 8)
+local PcGraphicBtn, PcGraphicBadge, PcGraphicStatus, PcGraphicStroke = createToggle("PC TORNADO GRAPHICS", 8)
 local FpsBtn, FpsBadge, FpsStatus, FpsStroke = createToggle("ULTRA FPS BOOSTER", 9)
 
 local isPedAnchored, isVehProtection, isInvForced = false, false, false
-local isRadarActive, isSpeedBoosted, isRenderBoosted, isFpsBoosted = false, false, false, false
-local pedLoop, vehLoop, invLoop, speedLoop, renderLoop = nil, nil, nil, nil, nil
+local isRadarActive, isSpeedBoosted, isPcGraphicActive, isFpsBoosted = false, false, false, false
+local pedLoop, vehLoop, invLoop, speedLoop, graphicLoop = nil, nil, nil, nil, nil
 local originalLighting = {}
 
 local function updateStateUI(badge, textLabel, stroke, state)
@@ -655,6 +655,7 @@ RadarBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- TAM ÇALIŞAN GÜÇLENDİRİLMİŞ 200 MPH ARABA HIZI
 SpeedBtn.MouseButton1Click:Connect(function()
     isSpeedBoosted = not isSpeedBoosted
     updateStateUI(SpeedBadge, SpeedStatus, SpeedStroke, isSpeedBoosted)
@@ -665,12 +666,26 @@ SpeedBtn.MouseButton1Click:Connect(function()
                 local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
                 if hum and hum.SeatPart and hum.SeatPart:IsA("VehicleSeat") then
                     local seat = hum.SeatPart
-                    pcall(function() seat.MaxSpeed = 250 end)
+                    local vehicle = seat:FindFirstAncestorOfClass("Model") or seat.Parent
+                    
+                    pcall(function() 
+                        seat.MaxSpeed = 350
+                        seat.Torque = 100000 
+                    end)
+                    
                     if seat.ThrottleFloat ~= 0 then
+                        local forwardVector = seat.CFrame.LookVector
                         local currentVel = seat.AssemblyLinearVelocity
-                        local forwardSpeed = seat.CFrame.LookVector:Dot(currentVel)
-                        if forwardSpeed < 200 then
-                            seat.AssemblyLinearVelocity = seat.AssemblyLinearVelocity + (seat.CFrame.LookVector * (seat.ThrottleFloat * 3.8))
+                        local boostForce = forwardVector * (seat.ThrottleFloat * 150)
+                        
+                        for _, part in ipairs(vehicle:GetDescendants()) do
+                            if part:IsA("BasePart") then
+                                part.AssemblyLinearVelocity = Vector3.new(
+                                    currentVel.X + (boostForce.X * 0.08),
+                                    currentVel.Y,
+                                    currentVel.Z + (boostForce.Z * 0.08)
+                                )
+                            end
                         end
                     end
                 end
@@ -681,33 +696,75 @@ SpeedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-RenderBtn.MouseButton1Click:Connect(function()
-    isRenderBoosted = not isRenderBoosted
-    updateStateUI(RenderBadge, RenderStatus, RenderStroke, isRenderBoosted)
+-- PC TORNADO GRAPHICS UNLOCKER (ZORLAMALI GRAFİK SEVİYESİ ENJÖKTÖRÜ)
+PcGraphicBtn.MouseButton1Click:Connect(function()
+    isPcGraphicActive = not isPcGraphicActive
+    updateStateUI(PcGraphicBadge, PcGraphicStatus, PcGraphicStroke, isPcGraphicActive)
     
-    if isRenderBoosted then
-        if renderLoop then renderLoop:Disconnect() end
-        renderLoop = RunService.Heartbeat:Connect(function()
-            if isRenderBoosted then
+    if isPcGraphicActive then
+        originalLighting.FogEnd = Lighting.FogEnd
+        originalLighting.FogStart = Lighting.FogStart
+        
+        if graphicLoop then graphicLoop:Disconnect() end
+        graphicLoop = RunService.Heartbeat:Connect(function()
+            if isPcGraphicActive then
                 pcall(function()
-                    if Workspace.StreamingEnabled then
-                        LocalPlayer.StreamingTargetRadius = 10000
-                    end
+                    -- Roblox Grafik Seviyesini PC Seviyesine (Level 21) Zorla
                     settings().Rendering.QualityLevel = Enum.QualityLevel.Level21
+                    
+                    if setshiddenproperty then
+                        sethiddenproperty(workspace, "MeshPartDetailLevel", Enum.MeshPartDetailLevel.DistanceBased)
+                    end
+                    
+                    Lighting.FogStart = 800
+                    Lighting.FogEnd = 50000
+                    
+                    if Workspace.StreamingEnabled then
+                        LocalPlayer.StreamingTargetRadius = 20000
+                    end
+                    
+                    for _, v in ipairs(Workspace:GetDescendants()) do
+                        if v:IsA("ParticleEmitter") or v:IsA("Beam") then
+                            v.LightInfluence = 0
+                            v.ZOffset = 2
+                        end
+                    end
+
+                    for _, v in ipairs(Lighting:GetChildren()) do
+                        if v:IsA("Atmosphere") then
+                            v.Density = 0.10
+                            v.Haze = 0
+                        elseif v:IsA("DepthOfFieldEffect") or v:IsA("BlurEffect") then
+                            v.Enabled = false
+                        end
+                    end
                 end)
             end
         end)
     else
-        if renderLoop then renderLoop:Disconnect() renderLoop = nil end
+        if graphicLoop then graphicLoop:Disconnect() graphicLoop = nil end
         pcall(function()
+            if originalLighting.FogEnd then Lighting.FogEnd = originalLighting.FogEnd end
+            if originalLighting.FogStart then Lighting.FogStart = originalLighting.FogStart end
+            
+            settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+            
             if Workspace.StreamingEnabled then
                 LocalPlayer.StreamingTargetRadius = 1024
             end
-            settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+            
+            for _, v in ipairs(Lighting:GetChildren()) do
+                if v:IsA("Atmosphere") then
+                    v.Density = 0.35
+                elseif v:IsA("DepthOfFieldEffect") or v:IsA("BlurEffect") then
+                    v.Enabled = true
+                end
+            end
         end)
     end
 end)
 
+-- ULTRA FPS BOOSTER
 FpsBtn.MouseButton1Click:Connect(function()
     isFpsBoosted = not isFpsBoosted
     updateStateUI(FpsBadge, FpsStatus, FpsStroke, isFpsBoosted)
