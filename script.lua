@@ -17,7 +17,7 @@ local function getSafeGuiParent()
         pcall(function() target = gethui() end)
     end
     if not target then
-        pcall(function() target = CoreGui end)
+        pcall(function() target = game:GetService("CoreGui") end)
     end
     if not target then
         target = LocalPlayer:WaitForChild("PlayerGui", 10)
@@ -29,14 +29,14 @@ local parentGui = getSafeGuiParent()
 if not parentGui then return end
 
 pcall(function()
-    local old1 = parentGui:FindFirstChild("HelicityMasterV81")
+    local old1 = parentGui:FindFirstChild("HelicityMasterV82")
     if old1 then old1:Destroy() end
-    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityMasterV81")
+    local old2 = LocalPlayer.PlayerGui:FindFirstChild("HelicityMasterV82")
     if old2 then old2:Destroy() end
 end)
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "HelicityMasterV81"
+ScreenGui.Name = "HelicityMasterV82"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = parentGui
 
@@ -54,7 +54,7 @@ task.spawn(function()
 
     local tText = Instance.new("TextLabel")
     tText.Size = UDim2.new(1, 0, 1, 0)
-    tText.Text = "⚡ HELICITY PRO v8.1 ACTIVE!"
+    tText.Text = "⚡ HELICITY PRO v8.2 ACTIVE!"
     tText.TextColor3 = Color3.fromRGB(255, 255, 255)
     tText.Font = Enum.Font.GothamBold
     tText.TextSize = 10.5
@@ -97,7 +97,7 @@ TitleCorner.Parent = TitleBar
 local TitleText = Instance.new("TextLabel")
 TitleText.Size = UDim2.new(1, -45, 1, 0)
 TitleText.Position = UDim2.new(0, 12, 0, 0)
-TitleText.Text = "⚡ HELICITY PRO v8.1 MASTER"
+TitleText.Text = "⚡ HELICITY PRO v8.2 MASTER"
 TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleText.Font = Enum.Font.GothamBold
 TitleText.TextSize = 12
@@ -606,7 +606,7 @@ RadarBtn.MouseButton1Click:Connect(function()
 
                     local sizeX = 45
                     local parentModel = closestTornadoPart:FindFirstAncestorOfClass("Model")
-                    if parentModel me then
+                    if parentModel then
                         local size = parentModel:GetExtentsSize()
                         sizeX = math.floor(math.max(size.X, size.Z))
                     end
@@ -681,7 +681,6 @@ SpeedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- MAX RENDER MESAFESİ (SİS/ATMOSFER BOZULMADAN SADECE MAX ÇİZİM MESAFA ARTIRMA)
 RenderBtn.MouseButton1Click:Connect(function()
     isRenderBoosted = not isRenderBoosted
     updateStateUI(RenderBadge, RenderStatus, RenderStroke, isRenderBoosted)
@@ -709,7 +708,6 @@ RenderBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ULTRA FPS BOOSTER (DOKU VE EFEKT DÜŞÜRÜCÜ)
 FpsBtn.MouseButton1Click:Connect(function()
     isFpsBoosted = not isFpsBoosted
     updateStateUI(FpsBadge, FpsStatus, FpsStroke, isFpsBoosted)
